@@ -1,0 +1,30 @@
+*{margin: 0;padding: 0;}
+
+.header{
+    width: 100%;
+    height: 60px;
+    background-color: #336699;
+}
+.header .title{
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 60px;
+    color: #ffffff;
+    margin-left: 15px;
+    margin-top: -10px;
+}
+
+.backend{
+    float: right;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 15px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+.pub_info{
+    margin-top: 10px;
+}
+.pub_info .glyphicon{
+    vertical-align: -1px;
+}
