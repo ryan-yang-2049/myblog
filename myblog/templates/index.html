@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/static/blog/css/index.css">
 </head>
 <body>
+<!--头部-->
 <nav class="navbar navbar-inverse navbar-fixed-top temp-custom-navigation ">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -20,28 +21,98 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="#">博客 <span class="sr-only">(current)</span></a></li>
-                <li><a href="#">随笔</a></li>
-                <li><a href="#">新闻</a></li>
+                <li><a href="#">成长</a></li>
+                <li><a href="#">学习</a></li>
+                <li><a href="#">娱乐</a></li>
+                <li><a href="#">旅行</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item"><a class="nav-link" href="#" data-toggle="modal" data-target="#RegistrationModal">注册</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" data-toggle="modal" data-target="#LogInModal">登录</a></li>
-                <li><a href="#">登录</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">个人设置<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">修改密码</a></li>
-                        <li><a href="#">修改头像</a></li>
-                        <li><a href="#">资料编辑</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">注销</a></li>
-                    </ul>
-                </li>
+                {% if request.user.is_authenticated %}
+                    <li>
+                        <a href="#">
+                            <span id="user_icon" class="glyphicon glyphicon-user"></span>
+                            {{ request.user.username }}
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">个人设置<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">修改密码</a></li>
+                            <li><a href="#">资料编辑</a></li>
+                            <li><a href="/cn_backend/">后台管理</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/logout/">注销</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="/login/">登陆</a></li>
+                    <li><a href="/register/">注册</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>
 </nav>
+
+<!--右侧开始-->
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">网站分类</h3>
+                </div>
+                <div class="panel-body">
+                    根据用户的分类进行筛选
+                </div>
+            </div>
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">友情链接</h3>
+                </div>
+                <div class="panel-body">
+                    一些博客文章或者外部链接
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">用户推荐</h3>
+                </div>
+                <div class="panel-body">
+                    根据用户的文章数或者被赞次数进行排序
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">站点公告</h3>
+                </div>
+                <div class="panel-body">
+                    站点公告
+                </div>
+            </div>
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">最新发布</h3>
+                </div>
+                <div class="panel-body">
+                    最新发布
+                </div>
+            </div>
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">放松一下</h3>
+                </div>
+                <div class="panel-body">
+                    美女图片
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </body>
 </html>

@@ -19,5 +19,16 @@ from blog import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.login),
+    path('register/', views.register),
     path('index/',views.index ),
+    path('logout/',views.logout ),
+    path('get_validCode_img/',views.get_validCode_img),
+
+
+	# 后台管理界面
+
+	path("cn_backend/",views.cn_backend),
+	path("cn_backend/add_articles/",views.add_articles),
+	path("cn_backend/add_tag/",views.add_tag)
+
 ]

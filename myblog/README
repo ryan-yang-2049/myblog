@@ -1,0 +1,5 @@
+1.login验证码获取 “？” 是什么意思
+        $("#valid_code_img").click(function () {
+            // 查询视频
+            $(this)[0].src +="?"
+        })

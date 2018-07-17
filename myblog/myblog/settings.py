@@ -131,3 +131,7 @@ STATICFILES_DIRS=[
 
 # 防止在重写User表时报错
 AUTH_USER_MODEL="blog.UserInfo"
+
+# 用户上传头像地址
+MEDIA_ROOT = os.path.join(BASE_DIR,"media")
+MEDIA_URL = "/media/"
