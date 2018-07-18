@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,re_path
+from django.views.static import serve
 from blog import views
+from myblog import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.login),
@@ -29,6 +31,13 @@ urlpatterns = [
 
 	path("cn_backend/",views.cn_backend),
 	path("cn_backend/add_articles/",views.add_articles),
-	path("cn_backend/add_tag/",views.add_tag)
+	path("cn_backend/add_attribute/",views.add_attribute),
 
+
+	#media 配置 头像
+	re_path(r'media/(?P<path>.*)$',serve,{"document_root":settings.MEDIA_ROOT}),
+
+
+	# 个人站点配置
+	re_path(r'^(?P<username>\w+)/$',views.home_site)
 ]

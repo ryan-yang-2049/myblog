@@ -1,0 +1,25 @@
+{% extends 'backend/base.html' %}
+
+{% block content %}
+
+    <form action="" method="post" class="form-inline">
+        {% csrf_token %}
+        <div class="alert-success text-center" style="font-size: 25px">添加分类或者标签</div>
+        <div class="add_categroy">
+            <div class="form-group">
+                <label for="id_add_categroy">分类名称</label>
+                <input type="text" class="form-control" id="id_add_categroy" name="categroy_name" placeholder="python全栈">
+            </div>
+            <input type="submit" class="btn btn-default form-control">
+        </div>
+        <hr>
+
+        <div class="add_tag">
+            <div class="form-group">
+                <label for="id_add_tag">标签名称</label>
+                <input type="text" class="form-control" id="id_add_tag" name="tag_name" placeholder="python">
+            </div>
+            <input type="submit" class="btn btn-default form-control">
+        </div>
+    </form>
+{% endblock %}

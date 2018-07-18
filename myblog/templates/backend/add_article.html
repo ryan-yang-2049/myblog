@@ -21,18 +21,22 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="category">文章分类</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label for="category">文章分类:</label>&nbsp;&nbsp;&nbsp;&nbsp;
                     {% for categroy_info in category_info_list %}
-                        <input type="radio" name="categroy" value="{{ categroy_info.category__title }}">&nbsp;&nbsp;
-                        {{ categroy_info.category__title }} &nbsp;&nbsp;
+                        <label class="radio-inline">
+                            <input type="radio" name="categroy" value="{{ categroy_info.category__title }}">
+                            {{ categroy_info.category__title }}
+                        </label>
                     {% endfor %}
 
                 </div>
                 <div class="form-group">
-                    <label for="tag">文章标签</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label for="tag">文章标签:</label>&nbsp;&nbsp;&nbsp;&nbsp;
                     {% for tag_info in tag_info_list %}
-                        <input type="radio" name="tag" value="{{ tag_info.tag__title }}">&nbsp;&nbsp;
-                        {{ tag_info.tag__title }} &nbsp;&nbsp;
+                        <label class="radio-inline">
+                            <input type="radio" name="tag"  value="{{ tag_info.tag__title }}">
+                            {{ tag_info.tag__title }}
+                        </label>
                     {% endfor %}
                 </div>
 

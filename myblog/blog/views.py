@@ -6,6 +6,8 @@ from django.contrib import auth
 
 from django.contrib.auth.decorators import login_required
 from bs4 import BeautifulSoup
+from django.db.models import Count
+
 #own class
 from blog.utils import validCode
 from blog import  models
@@ -75,21 +77,37 @@ def logout(request):
 
 def index(request):
 
+	article_list = models.Article.objects.all()
+	category_list = models.Category.objects.all()
+	#根据用户文章数进行排序
+	user_article_info = models.UserInfo.objects.values("pk").annotate(c=Count("article__nid")).values("username","c").order_by("-c")
+	print(user_article_info)
+
+	return render(request,"index.html",locals())
+
+def home_site(request,username,**kwargs):
+	'''
+	个人站点首页
+	:param request:
+	:return:
+	'''
+	return HttpResponse("OK")
 
 
-	return render(request,"index.html")
 
 
 @login_required
 def cn_backend(request):
 	category_info_list = models.Blog.objects.filter(userinfo__username=request.user).values("category__title")
 	print(category_info_list)
+	article_list = models.Article.objects.filter(user=request.user)
+	print(article_list)
 
-	return render(request,"backend/base.html",locals())
+	return render(request,"backend/backend.html",locals())
 
 
 def add_articles(request):
-
+	blog_id = models.Blog.objects.filter(userinfo__username=request.user).first()
 	if request.method == "POST":
 		print(request.POST)
 		title = request.POST.get("title")
@@ -101,16 +119,52 @@ def add_articles(request):
 
 		desc = soup.text[0:100]
 		categroy = request.POST.get("categroy")
+
 		tag = request.POST.get("tag")
-		print("categroy======",categroy)
-		print("tag=====",tag)
+
+
+
+		if  categroy:
+			categroy_obj = models.Category.objects.filter(blog_id=blog_id,title=categroy).first()
+			article_obj = models.Article.objects.create(title=title, content=str(soup), user=request.user, desc=desc,category=categroy_obj)
+			if tag:
+				tag_obj = models.Tag.objects.filter(title=tag, blog_id=blog_id).first()
+				models.Article2Tag.objects.create(article=article_obj, tag=tag_obj)
+		else:
+			article_obj = models.Article.objects.create(title=title, content=str(soup), user=request.user, desc=desc)
+			if tag:
+				tag_obj = models.Tag.objects.filter(title=tag, blog_id=blog_id).first()
+				models.Article2Tag.objects.create(article=article_obj, tag=tag_obj)
+
+		return redirect('/cn_backend/')
+
+	category_info_list = models.Blog.objects.filter(title=blog_id).values("category__title")
+	# category_info_list = models.Blog.objects.filter(userinfo__username=request.user).values("category__title")
+	tag_info_list = models.Blog.objects.filter(title=blog_id).values("tag__title")
+	# tag_info_list = models.Blog.objects.filter(userinfo__username=request.user).values("tag__title")
+
+	return render(request,"backend/add_article.html",locals())
+
+
+
+def add_attribute(request):
+
+	if request.method == "POST":
+		print(request.POST)
+		categroy_name = request.POST.get("categroy_name")
+		tag_name = request.POST.get("tag_name")
+		blog = models.Blog.objects.filter(userinfo__username=request.user).first()
+		print("blog",blog)
+		if categroy_name:
+			categroy_exist = models.Category.objects.filter(title=categroy_name).first()
+			if not categroy_exist:
+				models.Category.objects.create(title=categroy_name,blog=blog)
+
+		if tag_name:
+			tag_exist = models.Tag.objects.filter(title=tag_name).first()
+			if not tag_exist:
+				models.Tag.objects.create(title=tag_name,blog=blog)
 
 	category_info_list = models.Blog.objects.filter(userinfo__username=request.user).values("category__title")
 	tag_info_list = models.Blog.objects.filter(userinfo__username=request.user).values("tag__title")
-	print(tag_info_list)
-	return render(request,"backend/add_article.html",locals())
-
-def add_tag(request):
-
-
-	return HttpResponse("OK")
+	return render(request, "backend/add_attribute.html",locals())

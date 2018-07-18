@@ -1,1 +1,19 @@
 body { padding-top: 70px; }
+/*.img-lunbo{*/
+    /*width: 580px;*/
+    /*height: 300px;*/
+    /*overflow: hidden;*/
+/*}*/
+/*.img-lunbo .item{*/
+        /*!*width: 580px;*!*/
+    /*!*height: 300px;*!*/
+/*}*/
+/*.item .carousel-caption{*/
+    /*position:absolute;*/
+    /*z-index:99;*/
+/*}*/
+/*.img-lunbo .item img{*/
+    /*!*height:inherit;*!*/
+    /*!*width: 100%;*!*/
+    /*background-size:cover;*/
+/*}*/
