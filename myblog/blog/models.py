@@ -51,6 +51,8 @@ class Tag(models.Model):
 	def __str__(self):
 		return self.title
 
+from blog.utils.random_article_id import article_id_num
+
 
 class Article(models.Model):
 	nid = models.AutoField(primary_key=True)
@@ -58,7 +60,7 @@ class Article(models.Model):
 	desc = models.CharField(max_length=255, verbose_name='文章描述')
 	create_time = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
 	content = models.TextField()
-
+	article_id = models.CharField(max_length=32)
 	comment_count = models.IntegerField(verbose_name='评论总和', default=0)
 	up_count = models.IntegerField(verbose_name='点赞总和', default=0)
 	down_count = models.IntegerField(verbose_name='被踩总和', default=0)

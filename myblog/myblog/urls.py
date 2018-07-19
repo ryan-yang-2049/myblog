@@ -39,5 +39,6 @@ urlpatterns = [
 
 
 	# 个人站点配置
-	re_path(r'^(?P<username>\w+)/$',views.home_site)
+	re_path(r'^(?P<username>\w+)/$',views.home_site),
+	re_path(r'^(?P<username>\w+)/(?P<condition>tag|category|archive)/(?P<param>.*)/$',views.home_site)
 ]

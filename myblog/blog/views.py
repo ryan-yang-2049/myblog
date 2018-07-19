@@ -7,12 +7,13 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from bs4 import BeautifulSoup
 from django.db.models import Count
+from django.db.models.functions import TruncMonth
 
 #own class
 from blog.utils import validCode
 from blog import  models
 from blog.utils import MyForms
-
+from blog.utils.random_article_id import  article_id_num
 
 def login(request):
 	if request.method == "POST":
@@ -81,7 +82,7 @@ def index(request):
 	category_list = models.Category.objects.all()
 	#根据用户文章数进行排序
 	user_article_info = models.UserInfo.objects.values("pk").annotate(c=Count("article__nid")).values("username","c").order_by("-c")
-	print(user_article_info)
+	# print(user_article_info)
 
 	return render(request,"index.html",locals())
 
@@ -91,7 +92,43 @@ def home_site(request,username,**kwargs):
 	:param request:
 	:return:
 	'''
-	return HttpResponse("OK")
+	user_obj = models.UserInfo.objects.filter(username=username).first()
+
+	if not user_obj:
+		return render(request,"not_found.html")
+
+	blog_obj = user_obj.blog    # type <class 'blog.models.Blog'>
+	article_list = models.Article.objects.filter(user=user_obj) # 等价于  article_list = user_obj.article_set.all()
+
+
+	if kwargs:
+		condition = kwargs.get("condition")
+		param = kwargs.get("param")
+		if condition == "category":
+			article_list = article_list.filter(category__title=param)
+		elif condition == "tag":
+			article_list = article_list.filter(tags__title=param)
+		else:
+			year,month = param.split("-")
+			article_list = article_list.filter(create_time__year=year,create_time__month=month)
+
+
+
+
+	category_list = models.Category.objects.filter(blog=blog_obj).values("pk").annotate(c=Count("article__title")).values("title","c")
+
+	# 查询当前站点的每一个标签名称以及对应的文章数
+	tag_list = models.Tag.objects.filter(blog=blog_obj).values("pk").annotate(c=Count("article__title")).values("title","c")
+
+
+	# 查询当前站点每一个年月的名称以及对应的文章数
+	# ret = models.Article.objects.extra(select={"is_recent":"create_time">"2018-01-01"}).values("title","is_recent")
+	# date_list = models.Article.objects.filter(user=user_obj).extra(select={"y_m_date":"date_format(create_time,'%%Y-%%m')"}).values("y_m_date").annotate(c=Count("pk")).values("y_m_date","c")
+	date_list = models.Article.objects.annotate(month=TruncMonth('create_time')).values('month').annotate(c=Count('pk')).values('month','c')
+
+
+
+	return render(request,"home_site.html",locals())
 
 
 
@@ -121,17 +158,17 @@ def add_articles(request):
 		categroy = request.POST.get("categroy")
 
 		tag = request.POST.get("tag")
-
-
+		article_id = article_id_num()
+		print(article_id)
 
 		if  categroy:
 			categroy_obj = models.Category.objects.filter(blog_id=blog_id,title=categroy).first()
-			article_obj = models.Article.objects.create(title=title, content=str(soup), user=request.user, desc=desc,category=categroy_obj)
+			article_obj = models.Article.objects.create(title=title, content=str(soup), user=request.user, desc=desc,article_id=article_id,category=categroy_obj)
 			if tag:
 				tag_obj = models.Tag.objects.filter(title=tag, blog_id=blog_id).first()
 				models.Article2Tag.objects.create(article=article_obj, tag=tag_obj)
 		else:
-			article_obj = models.Article.objects.create(title=title, content=str(soup), user=request.user, desc=desc)
+			article_obj = models.Article.objects.create(title=title, content=str(soup), user=request.user, desc=desc,article_id=article_id)
 			if tag:
 				tag_obj = models.Tag.objects.filter(title=tag, blog_id=blog_id).first()
 				models.Article2Tag.objects.create(article=article_obj, tag=tag_obj)

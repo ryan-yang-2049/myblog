@@ -61,10 +61,11 @@
 </body>
 <script type="text/javascript">
     $(function () {
-
+        // 刷新验证码
         $("#valid_code_img").click(function () {
-            // 查询视频
+            // 相当于  http://127.0.0.1:8010/get_validCode_img/?   相当于发了一个get请求
             $(this)[0].src +="?"
+
         });
         $(".login_btn").click(function () {
             $.ajax({
