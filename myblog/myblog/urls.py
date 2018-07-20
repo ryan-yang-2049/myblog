@@ -20,15 +20,18 @@ from blog import views
 from myblog import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
+	re_path('^$', views.index),
+	path('index/', views.index),
     path('login/', views.login),
     path('register/', views.register),
-    path('index/',views.index ),
     path('logout/',views.logout ),
     path('get_validCode_img/',views.get_validCode_img),
 
 
-	# 后台管理界面
+	# 首页分类标签
+	re_path('cate/(?P<categroy_id>.*)/$',views.cate_view),
 
+	# 后台管理界面
 	path("cn_backend/",views.cn_backend),
 	path("cn_backend/add_articles/",views.add_articles),
 	path("cn_backend/add_attribute/",views.add_attribute),
@@ -40,5 +43,8 @@ urlpatterns = [
 
 	# 个人站点配置
 	re_path(r'^(?P<username>\w+)/$',views.home_site),
-	re_path(r'^(?P<username>\w+)/(?P<condition>tag|category|archive)/(?P<param>.*)/$',views.home_site)
+	re_path(r'^(?P<username>\w+)/(?P<condition>tag|category|archive)/(?P<param>.*)/$',views.home_site),
+
+	# 文章详情页
+	re_path(r'^(?P<username>\w+)/articles/(?P<article_id>.*)$',views.article_detail)
 ]

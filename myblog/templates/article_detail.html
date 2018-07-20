@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+     {% for article in article_obj %}
+        {{ article.content |safe}}
+    {% endfor %}
+{% endblock %}

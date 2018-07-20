@@ -79,12 +79,20 @@ def logout(request):
 def index(request):
 
 	article_list = models.Article.objects.all()
-	category_list = models.Category.objects.all()
+	# category_list = models.Category.objects.all()
 	#根据用户文章数进行排序
 	user_article_info = models.UserInfo.objects.values("pk").annotate(c=Count("article__nid")).values("username","c").order_by("-c")
 	# print(user_article_info)
 
 	return render(request,"index.html",locals())
+
+def cate_view(request,categroy_id):
+
+	article_list = models.Article.objects.filter(category=categroy_id).all()
+
+
+	return render(request,"index.html",locals())
+
 
 def home_site(request,username,**kwargs):
 	'''
@@ -100,7 +108,6 @@ def home_site(request,username,**kwargs):
 	blog_obj = user_obj.blog    # type <class 'blog.models.Blog'>
 	article_list = models.Article.objects.filter(user=user_obj) # 等价于  article_list = user_obj.article_set.all()
 
-
 	if kwargs:
 		condition = kwargs.get("condition")
 		param = kwargs.get("param")
@@ -111,23 +118,6 @@ def home_site(request,username,**kwargs):
 		else:
 			year,month = param.split("-")
 			article_list = article_list.filter(create_time__year=year,create_time__month=month)
-
-
-
-
-	category_list = models.Category.objects.filter(blog=blog_obj).values("pk").annotate(c=Count("article__title")).values("title","c")
-
-	# 查询当前站点的每一个标签名称以及对应的文章数
-	tag_list = models.Tag.objects.filter(blog=blog_obj).values("pk").annotate(c=Count("article__title")).values("title","c")
-
-
-	# 查询当前站点每一个年月的名称以及对应的文章数
-	# ret = models.Article.objects.extra(select={"is_recent":"create_time">"2018-01-01"}).values("title","is_recent")
-	# date_list = models.Article.objects.filter(user=user_obj).extra(select={"y_m_date":"date_format(create_time,'%%Y-%%m')"}).values("y_m_date").annotate(c=Count("pk")).values("y_m_date","c")
-	date_list = models.Article.objects.annotate(month=TruncMonth('create_time')).values('month').annotate(c=Count('pk')).values('month','c')
-
-
-
 	return render(request,"home_site.html",locals())
 
 
@@ -205,3 +195,11 @@ def add_attribute(request):
 	category_info_list = models.Blog.objects.filter(userinfo__username=request.user).values("category__title")
 	tag_info_list = models.Blog.objects.filter(userinfo__username=request.user).values("tag__title")
 	return render(request, "backend/add_attribute.html",locals())
+
+def article_detail(request,username,article_id):
+	user_obj = models.UserInfo.objects.filter(username=username).first()
+	blog_obj = user_obj.blog
+
+	article_obj = models.Article.objects.filter(user=user_obj,article_id=article_id).values("content")
+	print(article_obj)
+	return  render(request,"article_detail.html",locals())

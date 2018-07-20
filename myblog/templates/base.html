@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人站点</title>
+    <link rel="stylesheet" href="/static/blog/bootstrap/css/bootstrap.css">
+    <script src="/static/js/jquery-3.3.1.js"></script>
+    <script src="/static/blog/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        *{padding: 0;margin: 0;}
+        .header{
+            width: 100%;
+            height: 60px;
+            background-color: #336699;
+        }
+        .header .title{
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 60px;
+            color: #ffffff;
+            margin-left: 15px;
+            margin-top: -10px;
+        }
+        .header .title a{
+            text-decoration: none;
+            color: #FFFFFF;
+
+        }
+        .backend{
+            float: right;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 15px;
+            margin-right: 10px;
+            margin-top: 10px;
+            padding-right: 10px
+        }
+        .pub_info{
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+<!--头部-->
+
+<div class="header">
+    <p class="title">
+        <a href="/{{ username }}/">{{ blog_obj.title }}</a>
+{#        <span>{{ blog_obj.title}}</span>#}
+        <a href="/cn_backend/" class="backend">后台管理</a>
+        <a href="/index/" class="backend">首页</a>
+    </p>
+</div>
+
+<!--左侧开始-->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            {% load my_classification_tags %}
+            {% get_classification_style username %}
+        </div>
+        <!--中间部分-->
+        <div class="col-md-9">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

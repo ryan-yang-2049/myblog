@@ -27,7 +27,7 @@
 </div>
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="col-md-3">
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
             <div class="panel panel-default">
@@ -55,17 +55,16 @@
                     <h4 class="panel-title">
                         <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
                            aria-expanded="true" aria-controls="collapseOne">
-                            分类查看
+                            分类列表
                         </a>
                     </h4>
                 </div>
                 <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                     <div class="panel-body">
                         {% for categroy_info in category_info_list %}
-                            <p><a href="#">{{ categroy_info.category__title }}</a></p>
+                            <p><a href="/{{ request.user }}/category/{{ categroy_info.category__title }}">{{ categroy_info.category__title }}</a></p>
                         {% endfor %}
 
-                        <p>备注：这里可以做成ajax的形式，用于添加分类时局部刷新</p>
                     </div>
                 </div>
             </div>

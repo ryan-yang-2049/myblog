@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 
 
-# 创建数据库 CREATE DATABASE IF NOT EXISTS myblog DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+	# 创建数据库 CREATE DATABASE IF NOT EXISTS myblog DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 class UserInfo(AbstractUser):
 	"""
 	用于扩展django自带的user表
@@ -60,7 +60,7 @@ class Article(models.Model):
 	desc = models.CharField(max_length=255, verbose_name='文章描述')
 	create_time = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
 	content = models.TextField()
-	article_id = models.CharField(max_length=32)
+	article_id = models.CharField(max_length=32,)
 	comment_count = models.IntegerField(verbose_name='评论总和', default=0)
 	up_count = models.IntegerField(verbose_name='点赞总和', default=0)
 	down_count = models.IntegerField(verbose_name='被踩总和', default=0)
@@ -72,6 +72,10 @@ class Article(models.Model):
 		through='Article2Tag',
 		through_fields=('article', 'tag'),
 	)
+	class Meta:
+		unique_together = [
+			('user', 'article_id'),
+		]
 
 	def __str__(self):
 		return self.title

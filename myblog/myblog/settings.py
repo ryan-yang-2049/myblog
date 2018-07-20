@@ -25,8 +25,7 @@ SECRET_KEY = 'wp==0ynq@ub6z+2lv#z2+ucvwm2lxwh18t0-^g4s*sle06di!9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -135,3 +134,6 @@ AUTH_USER_MODEL="blog.UserInfo"
 # 用户上传头像地址
 MEDIA_ROOT = os.path.join(BASE_DIR,"media")
 MEDIA_URL = "/media/"
+
+
+LOGIN_URL = "/login/"
