@@ -79,11 +79,6 @@ def logout(request):
 def index(request):
 
 	article_list = models.Article.objects.all()
-	# category_list = models.Category.objects.all()
-	#根据用户文章数进行排序
-	user_article_info = models.UserInfo.objects.values("pk").annotate(c=Count("article__nid")).values("username","c").order_by("-c")
-	# print(user_article_info)
-
 	return render(request,"index.html",locals())
 
 def cate_view(request,categroy_id):
@@ -197,9 +192,64 @@ def add_attribute(request):
 	return render(request, "backend/add_attribute.html",locals())
 
 def article_detail(request,username,article_id):
+	'''
+	此时的article_id 只是 Article表中的一个字段，并不是主键值
+	:param request:
+	:param username:
+	:param article_id:
+	:return:
+	'''
 	user_obj = models.UserInfo.objects.filter(username=username).first()
 	blog_obj = user_obj.blog
 
-	article_obj = models.Article.objects.filter(user=user_obj,article_id=article_id).values("content")
-	print(article_obj)
+	article_obj = models.Article.objects.filter(user=user_obj,article_id=article_id).first()
+
+	comment_list = models.Comment.objects.filter(article_id=article_obj.pk)
+
 	return  render(request,"article_detail.html",locals())
+
+# 点赞视图
+import json
+from  django.db.models  import  F
+from django.http import JsonResponse
+def digg(request):
+
+	article_nid = request.POST.get("article_nid")
+	is_up = request.POST.get("is_up")  # 拿到的是一个true或者false的字符串，如果此时直接传入到数据库，那此时都为真，因此，要反序列化为布尔值
+	is_up = json.loads(request.POST.get("is_up"))
+	#点赞人，即当前登陆人
+	user_id  = request.user.pk
+	#判断用户是否对某篇文章进行过点赞或者踩
+	done_obj = models.ArticleUpDown.objects.filter(user_id=user_id,article_id=article_nid).first()
+
+	response = {"state":True,"handled":None}
+	if not done_obj:
+		aud = models.ArticleUpDown.objects.create(user_id=user_id,article_id=article_nid,is_up=is_up)
+		queryset = models.Article.objects.filter(pk=article_nid)
+		if is_up:
+			queryset.update(up_count = F("up_count")+1 )
+		else:
+			queryset.update(down_count=F("down_count") + 1)
+	else:
+		response["state"] = False
+		response["handled"] = done_obj.is_up
+
+
+	return JsonResponse(response)
+
+
+def comment(request):
+
+
+	article_nid = request.POST.get("article_nid")
+	pid = request.POST.get("pid")
+	content = request.POST.get("content")
+	user_id = request.user.pk
+	comment_obj = models.Comment.objects.create(user_id=user_id,article_id=article_nid,parent_comment_id=pid,content=content)
+	response = {}
+	response["create_time"] = comment_obj.create_time.strftime("%Y-%m-%d")  #进行json序列化的时候不能对对象进行序列化
+	response["content"] = comment_obj.content
+	response["username"] = request.user.username
+
+
+	return JsonResponse(response)

@@ -1,0 +1,7 @@
+<div>
+
+    {% for user in user_article_info %}
+        <!--目前根据文章数进行排序-->
+        <p><a href="/{{ user.username }}/" target="_blank">{{ user.username }} <span>({{ user.c }})</span></a></p>
+    {% endfor %}
+</div>

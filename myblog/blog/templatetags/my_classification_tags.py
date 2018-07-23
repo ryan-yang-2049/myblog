@@ -36,9 +36,13 @@ def get_categroy_data():
 	category_list = models.Category.objects.all()
 	return {"category_list":category_list}
 
+@register.inclusion_tag("username_recommend.html")
+def get_username_recommend():
+	user_article_info = models.UserInfo.objects.values("pk").annotate(c=Count("article__nid")).values("username","c").order_by("-c")
+	return {"user_article_info":user_article_info}
 
-def get_tag_data():
-	pass
+
+
 
 @register.inclusion_tag("date_list.html")
 def get_date_data():

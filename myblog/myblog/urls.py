@@ -19,14 +19,18 @@ from django.views.static import serve
 from blog import views
 from myblog import settings
 urlpatterns = [
-    path('admin/', admin.site.urls),
+	path('admin/', admin.site.urls),
 	re_path('^$', views.index),
 	path('index/', views.index),
-    path('login/', views.login),
-    path('register/', views.register),
-    path('logout/',views.logout ),
-    path('get_validCode_img/',views.get_validCode_img),
+	path('login/', views.login),
+	path('register/', views.register),
+	path('logout/',views.logout ),
+	path('get_validCode_img/',views.get_validCode_img),
+	# 点赞
+	path("digg/",views.digg),
 
+	#评论请求
+	re_path(r"comment/$",views.comment),
 
 	# 首页分类标签
 	re_path('cate/(?P<categroy_id>.*)/$',views.cate_view),
@@ -46,5 +50,9 @@ urlpatterns = [
 	re_path(r'^(?P<username>\w+)/(?P<condition>tag|category|archive)/(?P<param>.*)/$',views.home_site),
 
 	# 文章详情页
-	re_path(r'^(?P<username>\w+)/articles/(?P<article_id>.*)$',views.article_detail)
+	re_path(r'^(?P<username>\w+)/articles/(?P<article_id>.*)$',views.article_detail),
+
+
+
+
 ]
