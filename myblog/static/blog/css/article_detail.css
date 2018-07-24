@@ -48,13 +48,31 @@ input.author{
 }
 
 
-.comment_con{
-    margin-top: 10px;
-    background-color: #f9f5f5;
+.comments .comment_title{
+    font-size: 18px;
+    font-weight: 700;
 }
+
 
 .comment_item{
     margin-left: 20px;
+
+
+}
+
+.replay_conn{
+    word-wrap:break-word;
+    word-break:break-all;
+}
+
+
+.comment_item .comment_con{
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 17px;
+    word-wrap:break-word;
+    word-break:break-all;
+
 
 }
 

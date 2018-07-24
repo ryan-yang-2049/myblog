@@ -31,6 +31,7 @@ urlpatterns = [
 
 	#评论请求
 	re_path(r"comment/$",views.comment),
+	re_path(r"get_comment_tree/$",views.get_comment_tree),
 
 	# 首页分类标签
 	re_path('cate/(?P<categroy_id>.*)/$',views.cate_view),
@@ -39,6 +40,7 @@ urlpatterns = [
 	path("cn_backend/",views.cn_backend),
 	path("cn_backend/add_articles/",views.add_articles),
 	path("cn_backend/add_attribute/",views.add_attribute),
+	path("upload/",views.upload),
 
 
 	#media 配置 头像

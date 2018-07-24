@@ -132,8 +132,18 @@ STATICFILES_DIRS=[
 AUTH_USER_MODEL="blog.UserInfo"
 
 # 用户上传头像地址
+# MEDIA_ROOT = os.path.join(BASE_DIR,"media")
 MEDIA_ROOT = os.path.join(BASE_DIR,"media")
 MEDIA_URL = "/media/"
 
 
 LOGIN_URL = "/login/"
+
+# 发送邮件
+EMAIL_HOST = 'mail.phc-dow.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'yangyang@phc-dow.com'
+EMAIL_RECV_USER = ["461580544@qq.com","809074558@qq.com"]
+EMAIL_HOST_PASSWORD = 'Ryan!@999'
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 可以在send_mail中不加发送者的邮箱
+EMAIL_USE_SSL = False

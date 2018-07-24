@@ -1,14 +1,19 @@
 from django.shortcuts import render,HttpResponse,redirect
 
 # Create your views here.
-from django.http import JsonResponse
 from django.contrib import auth
 
 from django.contrib.auth.decorators import login_required
 from bs4 import BeautifulSoup
-from django.db.models import Count
-from django.db.models.functions import TruncMonth
-
+# 事务
+from django.db import transaction
+# 发送邮件
+from django.core.mail import send_mail
+from myblog import settings
+import threading
+import json
+from  django.db.models  import  F
+from django.http import JsonResponse
 #own class
 from blog.utils import validCode
 from blog import  models
@@ -168,6 +173,27 @@ def add_articles(request):
 	return render(request,"backend/add_article.html",locals())
 
 
+# 文章文件上传
+import os
+def upload(request):
+	print("POST",request.POST)
+	print(request.FILES)
+	img = request.FILES.get("upload_img")
+
+	path = os.path.join(settings.MEDIA_ROOT,"add_article_img",request.user.username)
+	filename = os.path.join(path,img.name)
+	if not os.path.exists(path):
+		os.makedirs(path)
+	with open(filename,"wb") as  f:
+		for line in img:
+			f.write(line)
+
+	response = {
+		"error":0,
+		"url":"%s/add_article_img/%s/%s"%(settings.MEDIA_URL,request.user.username,img.name)
+	}
+
+	return JsonResponse(response)
 
 def add_attribute(request):
 
@@ -209,9 +235,7 @@ def article_detail(request,username,article_id):
 	return  render(request,"article_detail.html",locals())
 
 # 点赞视图
-import json
-from  django.db.models  import  F
-from django.http import JsonResponse
+
 def digg(request):
 
 	article_nid = request.POST.get("article_nid")
@@ -245,11 +269,33 @@ def comment(request):
 	pid = request.POST.get("pid")
 	content = request.POST.get("content")
 	user_id = request.user.pk
-	comment_obj = models.Comment.objects.create(user_id=user_id,article_id=article_nid,parent_comment_id=pid,content=content)
+
+	article_obj = models.Article.objects.filter(pk=article_nid).first()
+	# 事务
+	with transaction.atomic():
+		comment_obj = models.Comment.objects.create(user_id=user_id,article_id=article_nid,parent_comment_id=pid,content=content)
+		models.Article.objects.filter(pk=article_nid).update(comment_count=F("comment_count")+1)
+
 	response = {}
-	response["create_time"] = comment_obj.create_time.strftime("%Y-%m-%d")  #进行json序列化的时候不能对对象进行序列化
+	response["create_time"] = comment_obj.create_time.strftime("%Y-%m-%d")  #进行json序列化的时候不能对对象进行序列化,所以要先格式化
 	response["content"] = comment_obj.content
 	response["username"] = request.user.username
 
+	# 发送邮件
+
+	t=threading.Thread(target=send_mail,args=("您的文章 %s 新增了一条评论内容"%article_obj.title,
+		content,
+		settings.EMAIL_HOST_USER,
+		settings.EMAIL_RECV_USER))
+	t.start()
 
 	return JsonResponse(response)
+
+def get_comment_tree(request):
+	article_nid = request.GET.get("article_nid")
+	ret = list(models.Comment.objects.filter(article_id=article_nid).order_by('pk').values("pk","user__username","content","create_time","parent_comment_id",))
+	# ret = list(models.Comment.objects.filter(article_id=article_nid).order_by('pk').values())
+	print(ret)
+	# 里面是一个queryset的对象，要进行序列化，必须先实例化对象
+
+	return JsonResponse(ret,safe=False)
