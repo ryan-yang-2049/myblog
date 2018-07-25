@@ -193,17 +193,12 @@ def edit_article(request,article_nid):
 				tag_obj = models.Tag.objects.filter(title=tag, blog_id=blog_id).first()
 				models.Article2Tag.objects.filter(article_id=article_nid).update(article=article_obj, tag=tag_obj)
 		else:
-			article_obj = models.Article.objects.filter(nid=article_nid).update(title=title, content=str(soup), user=request.user, desc=desc)
+			article_obj = models.Article.objects.filter(nid=article_nid).update(title=title, content=str(soup),desc=desc)
 			if tag:
 				tag_obj = models.Tag.objects.filter(title=tag, blog_id=blog_id).first()
 				models.Article2Tag.objects.filter(article_id=article_nid).create(article=article_obj, tag=tag_obj)
 
 		return redirect('/cn_backend/')
-
-
-
-
-
 
 	article_detail_content = models.Article.objects.filter(nid=article_nid).first()
 	old_title = article_detail_content.title
