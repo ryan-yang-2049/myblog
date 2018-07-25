@@ -38,6 +38,9 @@ urlpatterns = [
 
 	# 后台管理界面
 	path("cn_backend/",views.cn_backend),
+	path("delete_article/",views.delete_article),
+	re_path(r"cn_backend/update_article/(?P<article_nid>\d+)/$",views.edit_article),
+
 	path("cn_backend/add_articles/",views.add_articles),
 	path("cn_backend/add_attribute/",views.add_attribute),
 	path("upload/",views.upload),

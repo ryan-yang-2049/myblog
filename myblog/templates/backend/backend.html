@@ -5,13 +5,14 @@
     <div class="article_list small">
 
         <table class="table table-hover table-striped">
+            {% csrf_token %}
             <thead>
-                <th>序号</th>
-                <th>标题</th>
-                <th>评论数</th>
-                <th>点赞数</th>
-                <th>操作</th>
-                <th>操作</th>
+            <th>序号</th>
+            <th>标题</th>
+            <th>评论数</th>
+            <th>点赞数</th>
+            <th>操作</th>
+            <th>操作</th>
             </thead>
             <tbody>
             {% for article in article_list %}
@@ -20,12 +21,54 @@
                     <td>{{ article.title }}</td>
                     <td>{{ article.comment_count }}</td>
                     <td>{{ article.up_count }}</td>
-                    <td><a href="">编辑</a></td>
-                    <td><a href="">删除</a></td>
+                    <td><a href="/cn_backend/update_article/{{ article.nid }}/">编辑</a></td>
+                    <td><a href="" class="delete_article" article_nid="{{ article.nid }}" article_name="{{ article.title }}">删除</a></td>
                 </tr>
             {% endfor %}
 
             </tbody>
         </table>
     </div>
+    <script type="text/javascript">
+        $(function () {
+            // 删除文章
+            $(".delete_article").click(function () {
+                let article_nid = $(this).attr("article_nid");
+                let article_name = $(this).attr("article_name");
+                let result = confirm("是否删除文章“"+article_name+"”");
+                if (result === true){
+                    $.ajax({
+                        url:"/delete_article/",
+                        type:"post",
+                        data:{
+                            csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val(),
+                            "article_nid":article_nid
+                        },
+                        success:function (data) {
+                            $(this).parent().remove()
+                        }
+                    })
+                }
+
+            });
+
+            // 编译文章
+            $(".edit_article11").click(function () {
+                let article_nid = $(this).attr("article_nid");
+
+                $.ajax({
+                    url:"/edit_article/",
+                    type:"post",
+                    data:{
+                        csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val(),
+                        "article_nid":article_nid
+                    },
+                    success:function (data) {
+                        location.href = "/cn_backend/edit_article/"
+                    }
+                })
+
+            })
+        })
+    </script>
 {% endblock %}

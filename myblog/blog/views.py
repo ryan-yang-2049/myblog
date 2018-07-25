@@ -48,7 +48,6 @@ def get_validCode_img(request):
 def register(request):
 	if request.is_ajax():
 		form = MyForms.UserForm(request.POST)
-		print(request.POST)
 		response = {"user_info": None, "msg": None}
 		if form.is_valid():
 			response["user_info"] = form.cleaned_data.get("user")
@@ -126,30 +125,29 @@ def home_site(request,username,**kwargs):
 @login_required
 def cn_backend(request):
 	category_info_list = models.Blog.objects.filter(userinfo__username=request.user).values("category__title")
-	print(category_info_list)
+
 	article_list = models.Article.objects.filter(user=request.user)
-	print(article_list)
+
 
 	return render(request,"backend/backend.html",locals())
 
-
+@login_required
 def add_articles(request):
 	blog_id = models.Blog.objects.filter(userinfo__username=request.user).first()
 	if request.method == "POST":
-		print(request.POST)
+
 		title = request.POST.get("title")
 		content = request.POST.get("content")
 		soup = BeautifulSoup(content,"html.parser")
 		for tag_info in soup.find_all():
 			if tag_info.name == "script":
-				tag_info.decompose()
+				tag_info.decompose()   # 删除这个标签
 
 		desc = soup.text[0:100]
 		categroy = request.POST.get("categroy")
 
 		tag = request.POST.get("tag")
 		article_id = article_id_num()
-		print(article_id)
 
 		if  categroy:
 			categroy_obj = models.Category.objects.filter(blog_id=blog_id,title=categroy).first()
@@ -173,11 +171,74 @@ def add_articles(request):
 	return render(request,"backend/add_article.html",locals())
 
 
+@login_required
+def edit_article(request,article_nid):
+	blog_id = models.Blog.objects.filter(userinfo__username=request.user).first()
+	if request.method == "POST":
+		title = request.POST.get("title")
+		content = request.POST.get("content")
+		soup = BeautifulSoup(content,"html.parser")
+		for tag_info in soup.find_all():
+			if tag_info.name == "script":
+				tag_info.decompose()   # 删除这个标签
+
+		desc = soup.text[0:100]
+		categroy = request.POST.get("categroy")
+
+		tag = request.POST.get("tag")
+		if  categroy:
+			categroy_obj = models.Category.objects.filter(blog_id=blog_id,title=categroy).first()
+			article_obj = models.Article.objects.filter(nid=article_nid).update(title=title, content=str(soup),desc=desc,category=categroy_obj)
+			if tag:
+				tag_obj = models.Tag.objects.filter(title=tag, blog_id=blog_id).first()
+				models.Article2Tag.objects.filter(article_id=article_nid).update(article=article_obj, tag=tag_obj)
+		else:
+			article_obj = models.Article.objects.filter(nid=article_nid).update(title=title, content=str(soup), user=request.user, desc=desc)
+			if tag:
+				tag_obj = models.Tag.objects.filter(title=tag, blog_id=blog_id).first()
+				models.Article2Tag.objects.filter(article_id=article_nid).create(article=article_obj, tag=tag_obj)
+
+		return redirect('/cn_backend/')
+
+
+
+
+
+
+	article_detail_content = models.Article.objects.filter(nid=article_nid).first()
+	old_title = article_detail_content.title
+	old_content = article_detail_content.content
+	old_category = article_detail_content.category.nid
+	old_tag = models.Article2Tag.objects.filter(article_id=article_nid)
+	if old_tag:
+		old_tag = old_tag.values("tag_id").first()["tag_id"]
+	else:
+		old_tag = None
+
+
+	category_info_list = models.Blog.objects.filter(title=blog_id).values("category__title","category__nid")
+	tag_info_list = models.Blog.objects.filter(title=blog_id).values("tag__title","tag__nid")
+
+	return render(request,"backend/edit_article.html",locals())
+
+
+
+
+def delete_article(request):
+	if request.is_ajax():
+		article_nid = request.POST.get("article_nid")
+
+		#删除文章表的数据
+		ret1 = models.Article.objects.filter(nid=article_nid).delete()
+		# 删除article2tag的数据
+		ret2 = models.Article2Tag.objects.filter(article_id=article_nid).delete()
+
+	return HttpResponse("ok")
+
 # 文章文件上传
 import os
 def upload(request):
-	print("POST",request.POST)
-	print(request.FILES)
+
 	img = request.FILES.get("upload_img")
 
 	path = os.path.join(settings.MEDIA_ROOT,"add_article_img",request.user.username)
@@ -198,11 +259,11 @@ def upload(request):
 def add_attribute(request):
 
 	if request.method == "POST":
-		print(request.POST)
+
 		categroy_name = request.POST.get("categroy_name")
 		tag_name = request.POST.get("tag_name")
 		blog = models.Blog.objects.filter(userinfo__username=request.user).first()
-		print("blog",blog)
+
 		if categroy_name:
 			categroy_exist = models.Category.objects.filter(title=categroy_name).first()
 			if not categroy_exist:
@@ -284,9 +345,9 @@ def comment(request):
 	# 发送邮件
 
 	t=threading.Thread(target=send_mail,args=("您的文章 %s 新增了一条评论内容"%article_obj.title,
-		content,
-		settings.EMAIL_HOST_USER,
-		settings.EMAIL_RECV_USER))
+	                                          content,
+	                                          settings.EMAIL_HOST_USER,
+	                                          settings.EMAIL_RECV_USER))
 	t.start()
 
 	return JsonResponse(response)
@@ -295,7 +356,7 @@ def get_comment_tree(request):
 	article_nid = request.GET.get("article_nid")
 	ret = list(models.Comment.objects.filter(article_id=article_nid).order_by('pk').values("pk","user__username","content","create_time","parent_comment_id",))
 	# ret = list(models.Comment.objects.filter(article_id=article_nid).order_by('pk').values())
-	print(ret)
+
 	# 里面是一个queryset的对象，要进行序列化，必须先实例化对象
 
 	return JsonResponse(ret,safe=False)

@@ -81,7 +81,7 @@
                     if(data.user){
                         location.href = "/index/"
                     }else{
-                        $("span.error").text(data.msg).css({"color":"red","margin-left":"10px"})
+                        $("span.error").text(data.msg).css({"color":"red","margin-left":"10px"});
                         setTimeout(function () {
                             $("span.error").text("")
                         },2000)

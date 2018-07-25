@@ -1,0 +1,77 @@
+{% extends 'backend/base.html' %}
+
+{% block content %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="add_article">
+            <div class="alert-success text-center" style="font-size: 25px">编辑文章</div>
+            <div class="add_article_region">
+                <div class="title form-group">
+                    <label for="">标题</label>
+                    <div>
+                        <input type="text" name="title" value="{{ old_title }}">
+                    </div>
+                </div>
+
+                <div class="content form-group">
+                    <label for="">内容(Kindeditor编辑器，不支持拖放/粘贴上传图片) </label>
+                    <div>
+                        <textarea name="content" id="article_content" cols="30" rows="10">{{ old_content }}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="category">文章分类:</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    {% for categroy_info in category_info_list %}
+                        <label class="radio-inline">
+                            {% if categroy_info.category__nid == old_category %}
+                                <input type="radio" name="categroy" checked="checked" value="{{ categroy_info.category__title }}">
+                                {{ categroy_info.category__title }}
+                            {% else %}
+                                <input type="radio" name="categroy" value="{{ categroy_info.category__title }}">
+                                {{ categroy_info.category__title }}
+                            {% endif %}
+                        </label>
+                    {% endfor %}
+
+                </div>
+                <div class="form-group">
+                    <label for="tag">文章标签:</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    {% for tag_info in tag_info_list %}
+                        <label class="radio-inline">
+                            {% if old_tag == tag_info.tag__nid %}
+                                <input type="radio" name="tag" checked="checked" value="{{ tag_info.tag__title }}">
+                                {{ tag_info.tag__title }}
+                            {% else %}
+                                <input type="radio" name="tag"  value="{{ tag_info.tag__title }}">
+                                {{ tag_info.tag__title }}
+                            {% endif %}
+                        </label>
+                    {% endfor %}
+                </div>
+                <input type="submit" class="btn btn-default">
+            </div>
+        </div>
+    </form>
+    <br>
+    <script src="/static/js/jquery-3.3.1.js"></script>
+    <script charset="utf-8" src="/static/blog/kindeditor/kindeditor-all.js"></script>
+
+    <script>
+        KindEditor.ready(function (K) {
+            window.editor = K.create('#article_content', {
+                width: "800",
+                height: "600",
+                resizeType: 0,
+                uploadJson: "/upload/",
+                extraFileUploadParams: {
+                    csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                },
+                filePostName: "upload_img"
+
+            });
+        });
+    </script>
+
+
+{% endblock %}
