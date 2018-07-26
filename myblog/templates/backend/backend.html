@@ -4,7 +4,7 @@
 {% block content %}
     <div class="article_list small">
 
-        <table class="table table-hover table-striped">
+        <table class="table table-hover table-stripe" id="content_table">
             {% csrf_token %}
             <thead>
             <th>序号</th>
@@ -18,7 +18,7 @@
             {% for article in article_list %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ article.title }}</td>
+                    <td><a href="/{{ article.user }}/articles/{{ article.article_id }}" class="title_link">{{ article.title }}</a></td>
                     <td>{{ article.comment_count }}</td>
                     <td>{{ article.up_count }}</td>
                     <td><a href="/cn_backend/update_article/{{ article.nid }}/">编辑</a></td>

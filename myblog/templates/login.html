@@ -6,30 +6,14 @@
     <script src="/static/js/jquery-3.3.1.js"></script>
     <link rel="stylesheet" href="/static/blog/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/blog/bootstrap/js/bootstrap.min.js">
-    <style>
-        *{padding: 0;margin: 0;}
-        html{
-            height: 100%;
-        }
-        body{
-
-            background: url("/static/blog/img/login/login_img.jpg") no-repeat;
-            background-size: 100% 100%;
-            position: absolute;
-        }
-        .container  .title{
-            text-align: center;
-        }
-        label{font-size: 18px}
-
-    </style>
-
+    <link rel="stylesheet" href="/static/blog/css/login.css">
+    <script type="text/javascript" src="/static/blog/js/login.js"></script>
 </head>
 <body>
 <div class="container">
-    <h3 class="title">登陆页面</h3>
     <div class="row">
-        <div class="col-md-6 col-lg-offset-3">
+        <div class="col-md-6 col-md-offset-5">
+            <h3 class="title">登陆页面</h3>
             <form action="" novalidate="novalidate" >
                 {% csrf_token %}
                 <div class="form-group">
@@ -59,42 +43,4 @@
     </div>
 </div>
 </body>
-<script type="text/javascript">
-    $(function () {
-        // 刷新验证码
-        $("#valid_code_img").click(function () {
-            // 相当于  http://127.0.0.1:8010/get_validCode_img/?   相当于发了一个get请求
-            $(this)[0].src +="?"
-
-        });
-        $(".login_btn").click(function () {
-            $.ajax({
-                url:"",
-                type:"post",
-                data:{
-                    user:$("#user").val(),
-                    pwd:$("#pwd").val(),
-                    valid_code:$("#valid_code").val(),
-                    csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val()
-                },
-                success:function (data) {
-                    if(data.user){
-                        location.href = "/index/"
-                    }else{
-                        $("span.error").text(data.msg).css({"color":"red","margin-left":"10px"});
-                        setTimeout(function () {
-                            $("span.error").text("")
-                        },2000)
-                    }
-                }
-            })
-        });
-
-
-
-
-
-
-    })
-</script>
 </html>

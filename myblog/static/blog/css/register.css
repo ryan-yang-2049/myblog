@@ -1,0 +1,14 @@
+*{padding: 0;margin: 0;}
+html{
+    height: 100%;
+}
+body{
+
+    background: url("/static/blog/img/login/login_img.jpg") no-repeat;
+    background-size: 100% 100%;
+    position: absolute;
+}
+.container  .title{
+    text-align: center;
+}
+label{font-size: 18px}

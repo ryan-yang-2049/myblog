@@ -61,3 +61,9 @@
     border-radius: 80%;
     margin: 20px 20px;
 }
+
+.title_link{
+    color: black;
+}
+
+#content_table>a:visited,a:link{text-decoration: none}
